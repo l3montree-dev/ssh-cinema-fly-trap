@@ -1,0 +1,24 @@
+# Honeypot SSH Config
+
+# Basis-Einstellungen
+Port 22
+PermitRootLogin yes
+PasswordAuthentication yes
+ChallengeResponseAuthentication no
+UsePAM yes
+
+# WICHTIG: ForceCommand für manipulationssichere Aufzeichnung
+ForceCommand /opt/myscripts/session_wrapper.sh
+
+# Logging
+SyslogFacility AUTH
+LogLevel INFO
+
+# Sicherheit (absichtlich schwach für Honeypot)
+PermitEmptyPasswords no
+X11Forwarding yes
+PrintMotd no
+AcceptEnv LANG LC_*
+
+# Subsystem für SFTP (falls Angreifer das nutzt)
+Subsystem sftp /usr/lib/openssh/sftp-server

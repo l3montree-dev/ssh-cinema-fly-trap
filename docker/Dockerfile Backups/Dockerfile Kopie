@@ -1,0 +1,55 @@
+FROM ubuntu:22.04
+
+# SSH mit Login einrichten
+RUN apt update && apt install -y openssh-server curl wget nano vim  \
+    && sed -i 's/#Port 22/Port 22/' /etc/ssh/sshd_config \
+    && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
+    && echo 'root:root' | chpasswd \
+    && useradd -m -s /bin/bash user \
+    && echo 'user:password' | chpasswd \
+    && mkdir -p /run/sshd
+
+# Notwendige Tools installieren
+RUN apt-get install -y python3-pip tcpdump rsyslog && \
+    pip3 install asciinema && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Verzeichnisse mit passenden Rechten anlegen
+RUN mkdir -p /var/log/auth && chmod 700 /var/log/auth \
+    && mkdir -p /var/log/.journal && chmod 700 /var/log/.journal \
+    && mkdir -p /tmp/.systemd-private && chmod 777 /tmp/.systemd-private
+
+# Verzeichnisse für die Fake Webapp anlegen
+    RUN mkdir -p /home/user/webapp/backups \
+    && mkdir -p /home/user/webapp/logs \
+    && mkdir -p /home/user/documents \
+    && mkdir -p /home/user/downloads
+
+# SSH Logfiles in eigenes Verzeichnis schreiben
+RUN echo 'if [[ -z "$ASCIINEMA_REC" && "$SSH_CONNECTION" != "" ]]; then' >> /root/.bashrc \
+    && echo '    export ASCIINEMA_REC=1' >> /root/.bashrc \
+    && echo '    RECORDING_FILE="/tmp/.systemd-private/session_$(date +%Y%m%d_%H%M%S)_${USER}_$$.cast"' >> /root/.bashrc \
+    && echo '    exec asciinema rec -q "$RECORDING_FILE" 2>/dev/null' >> /root/.bashrc \
+    && echo 'fi' >> /root/.bashrc
+
+# Same für non-root user    
+RUN echo 'if [[ -z "$ASCIINEMA_REC" && "$SSH_CONNECTION" != "" ]]; then' >> /home/user/.bashrc \
+    && echo '    export ASCIINEMA_REC=1' >> /home/user/.bashrc \
+    && echo '    RECORDING_FILE="/tmp/.systemd-private/session_$(date +%Y%m%d_%H%M%S)_${USER}_$$.cast"' >> /home/user/.bashrc \
+    && echo '    exec asciinema rec -q "$RECORDING_FILE" 2>/dev/null' >> /home/user/.bashrc \
+    && echo 'fi' >> /home/user/.bashrc
+
+# Fake Dateien einschleusen
+COPY fake_env.md /home/user/webapp/.env
+COPY db_backup.sql /home/user/webapp/backups/db_backup.sql
+COPY fake_bash.md /home/user/.bash_history
+
+# Startup Script kopieren
+COPY myscripts/startup-script /opt/start.sh
+RUN chmod +x /opt/start.sh
+
+EXPOSE 22
+
+VOLUME [ "/tmp/.systemd-private", "/var/log/auth", "/var/log/.journal" ]
+
+CMD ["/opt/start.sh"]

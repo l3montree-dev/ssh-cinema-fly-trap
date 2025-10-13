@@ -1,0 +1,25 @@
+services:
+  container:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: lemon_webapp
+    ports:
+      - "2222:22"
+    volumes:
+      - /Users/juliankepka/Downloads/honeypot_container/data/Terminal-Recordings:/tmp/.systemd-private
+      - /Users/juliankepka/Downloads/honeypot_container/data/Systemlogs:/var/log/auth
+      - /Users/juliankepka/Downloads/honeypot_container/data/PCAP-Dateien:/var/log/.journal
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    logging:
+      driver: "none"

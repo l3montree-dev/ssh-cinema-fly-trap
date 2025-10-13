@@ -1,0 +1,14 @@
+#!/bin/bash
+# /opt/start.sh
+
+# Timestamp
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+# rsyslog starten
+rsyslogd
+
+# tcpdump starten
+tcpdump -i any -w /var/log/.journal/traffic_${TIMESTAMP}.pcap &
+
+# sshd im Vordergrund starten
+/usr/sbin/sshd -D

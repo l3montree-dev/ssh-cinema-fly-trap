@@ -1,0 +1,35 @@
+# ===================================
+# SENSITIVE DATA - NEVER COMMIT!
+# ===================================
+
+# Discord Webhook
+scripts/monitoring/alert.sh
+
+# Aufgezeichnete Sessions
+Terminal-Recordings/
+Systemlogs/
+PCAP-Dateien/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Docker
+docker-compose.override.yml
+.env
+
+# Backups
+*.backup
+*.bak
+Dockerfiles Backups/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
