@@ -17,3 +17,4 @@ jobs:
             web-ui: "https://main.devguard.org"
         secrets:
             devguard-token: "${{ secrets.DEVGUARD_TOKEN }}" # you need to create this secret in your GitHub repository settings.
+            build-args: "--context=. --dockerfile=docker/Dockerfile"
