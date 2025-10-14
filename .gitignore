@@ -19,7 +19,7 @@ docker-compose.override.yml
 # Backups
 *.backup
 *.bak
-Dockerfiles Backups/
+Dockerfile Backups/
 
 # IDE
 .vscode/
