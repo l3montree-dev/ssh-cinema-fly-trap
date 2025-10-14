@@ -16,4 +16,4 @@ jobs:
             api-url: "https://api.main.devguard.org"
             web-ui: "https://main.devguard.org"
         secrets:
-            devguard-token: "${{ 71350e41535de33ae770489805f32cde6386f2b4bdf04540e188e0306d71aef4 }}" # you need to create this secret in your GitHub repository settings 
+            devguard-token: "${{ secrets.DEVGUARD_TOKEN }}" # you need to create this secret in your GitHub repository settings 
