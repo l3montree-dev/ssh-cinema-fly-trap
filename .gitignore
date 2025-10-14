@@ -2,9 +2,6 @@
 # SENSITIVE DATA - NEVER COMMIT!
 # ===================================
 
-# Discord Webhook
-scripts/monitoring/alert.sh
-
 # Aufgezeichnete Sessions
 Terminal-Recordings/
 Systemlogs/
