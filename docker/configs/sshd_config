@@ -14,11 +14,11 @@ ForceCommand /opt/myscripts/session_wrapper.sh
 SyslogFacility AUTH
 LogLevel INFO
 
-# Sicherheit (absichtlich schwach für Honeypot)
+# Sicherheit 
 PermitEmptyPasswords no
 X11Forwarding yes
 PrintMotd no
 AcceptEnv LANG LC_*
 
-# Subsystem für SFTP (falls Angreifer das nutzt)
+# Subsystem für SFTP
 Subsystem sftp /usr/lib/openssh/sftp-server
