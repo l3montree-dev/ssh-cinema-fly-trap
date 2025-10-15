@@ -2,7 +2,7 @@ services:
   container:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
     container_name: lemon_webapp
     ports:
       - "2222:22"
