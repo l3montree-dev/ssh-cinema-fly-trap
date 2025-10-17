@@ -1,5 +1,7 @@
 services:
   container:
+    security_opt:
+      - no-new-privileges:true
     build:
       context: ..
       dockerfile: Dockerfile
