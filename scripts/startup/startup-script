@@ -3,8 +3,9 @@
 
 # Berechtigung zuweisen
 chmod 777 /tmp/.systemd-private
-chmod 700 /var/log/auth             
-chmod 700 /var/log/.journal 
+chmod 775 /var/log/auth
+chmod 775 /var/log/.journal
+chown -R syslog:syslog /var/log/auth
 
 # Timestamp
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
