@@ -37,8 +37,10 @@ fi
 
 # Wenn non-interactive SSH:
 if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
-    # Command direkt ausführen, aber durch asciinema recorden
-    exec asciinema rec -q --stdin -c "$SSH_ORIGINAL_COMMAND" "$RECORDING_FILE"
+    exec asciinema rec -q "$RECORDING_FILE" -c "bash -c '
+        echo \"$ ${SSH_ORIGINAL_COMMAND}\"
+        eval \"${SSH_ORIGINAL_COMMAND}\"
+    '"
 else
     # Interactive Session: Shell starten mit asciinema
     exec asciinema rec -q "$RECORDING_FILE" -c "$USER_SHELL"
