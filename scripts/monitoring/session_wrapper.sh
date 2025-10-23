@@ -22,12 +22,10 @@ cat > "/tmp/.systemd-private/${SESSION_ID}.meta" <<EOF
   "dest_ip": "${DEST_IP}",
   "dest_port": "${DEST_PORT}",
   "start_time": "$(date -Iseconds)",
-  "original_command": "${SSH_ORIGINAL_COMMAND}"
+  "original_command": "${SSH_ORIGINAL_COMMAND}",
+  "connection_type": "$([ -n "$SSH_ORIGINAL_COMMAND" ] && echo "non-interactive" || echo "interactive")"
 }
 EOF
-
-# 🚨 DISCORD ALERT SENDEN
-/opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" &
 
 # User's Shell herausfinden
 USER_SHELL=$(getent passwd $USER | cut -d: -f7)
@@ -37,11 +35,38 @@ fi
 
 # Wenn non-interactive SSH:
 if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
-    exec asciinema rec -q "$RECORDING_FILE" -c "bash -c '
-        echo \"$ ${SSH_ORIGINAL_COMMAND}\"
-        eval \"${SSH_ORIGINAL_COMMAND}\"
-    '"
+    
+    # SCP SPEZIAL-BEHANDLUNG
+    if [[ "$SSH_ORIGINAL_COMMAND" =~ ^scp ]]; then
+        echo "[$(date -Iseconds)] SCP: $SSH_ORIGINAL_COMMAND from $SOURCE_IP" >> "/var/log/auth/scp_transfers.log"
+        /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "🔼 SCP Upload" &
+        exec $SSH_ORIGINAL_COMMAND
+    fi
+    
+    # SFTP SPEZIAL-BEHANDLUNG
+    if [[ "$SSH_ORIGINAL_COMMAND" =~ ^/usr/lib.*sftp-server ]]; then
+        echo "[$(date -Iseconds)] SFTP connection from $SOURCE_IP" >> "/var/log/auth/sftp_connections.log"
+        /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "📁 SFTP Connection" &
+        exec $SSH_ORIGINAL_COMMAND
+    fi
+    
+    # Discord Alert
+    /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "${SSH_ORIGINAL_COMMAND}" &
+    
+    # Temporäres Script für saubere Ausführung
+    TEMP_SCRIPT="/tmp/.cmd_${SESSION_ID}.sh"
+    cat > "$TEMP_SCRIPT" <<'SCRIPT_EOF'
+#!/bin/bash
+echo "$ $SSH_ORIGINAL_COMMAND"
+eval "$SSH_ORIGINAL_COMMAND"
+SCRIPT_EOF
+    
+    chmod +x "$TEMP_SCRIPT"
+    export SSH_ORIGINAL_COMMAND
+    exec asciinema rec -q "$RECORDING_FILE" -c "$TEMP_SCRIPT"
+    
 else
     # Interactive Session: Shell starten mit asciinema
+    /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "Interactive Session" &
     exec asciinema rec -q "$RECORDING_FILE" -c "$USER_SHELL"
 fi
