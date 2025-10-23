@@ -1,18 +1,15 @@
 #!/bin/bash
-# Session Wrapper für manipulationssichere Aufzeichnung
+# Session Wrapper - FIXED
 
-# Session-ID generieren
 SESSION_ID="session_$(date +%Y%m%d_%H%M%S)_${USER}_$$"
 RECORDING_FILE="/tmp/.systemd-private/${SESSION_ID}.cast"
 
-# Session-Metadaten sammeln
 SOURCE_IP=$(echo $SSH_CONNECTION | awk '{print $1}')
 SOURCE_PORT=$(echo $SSH_CONNECTION | awk '{print $2}')
 DEST_IP=$(echo $SSH_CONNECTION | awk '{print $3}')
 DEST_PORT=$(echo $SSH_CONNECTION | awk '{print $4}')
 TIMESTAMP=$(date -Iseconds)
 
-# Metadaten-File erstellen (für spätere Analyse)
 cat > "/tmp/.systemd-private/${SESSION_ID}.meta" <<EOF
 {
   "session_id": "${SESSION_ID}",
@@ -27,33 +24,30 @@ cat > "/tmp/.systemd-private/${SESSION_ID}.meta" <<EOF
 }
 EOF
 
-# User's Shell herausfinden
 USER_SHELL=$(getent passwd $USER | cut -d: -f7)
 if [ -z "$USER_SHELL" ]; then
     USER_SHELL="/bin/bash"
 fi
 
-# Wenn non-interactive SSH:
 if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
     
-    # SCP SPEZIAL-BEHANDLUNG
+    # SCP - KEIN asciinema, nur loggen
     if [[ "$SSH_ORIGINAL_COMMAND" =~ ^scp ]]; then
         echo "[$(date -Iseconds)] SCP: $SSH_ORIGINAL_COMMAND from $SOURCE_IP" >> "/var/log/auth/scp_transfers.log"
-        /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "🔼 SCP Upload" &
+        /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "SCP Upload/Download" &
         exec $SSH_ORIGINAL_COMMAND
     fi
     
-    # SFTP SPEZIAL-BEHANDLUNG
+    # SFTP - KEIN asciinema, nur loggen
     if [[ "$SSH_ORIGINAL_COMMAND" =~ ^/usr/lib.*sftp-server ]]; then
-        echo "[$(date -Iseconds)] SFTP connection from $SOURCE_IP" >> "/var/log/auth/sftp_connections.log"
-        /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "📁 SFTP Connection" &
+        echo "[$(date -Iseconds)] SFTP from $SOURCE_IP" >> "/var/log/auth/sftp_connections.log"
+        /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "SFTP Connection" &
         exec $SSH_ORIGINAL_COMMAND
     fi
     
-    # Discord Alert
+    # Normale Commands - NUR EINE Discord-Nachricht
     /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "${SSH_ORIGINAL_COMMAND}" &
     
-    # Temporäres Script für saubere Ausführung
     TEMP_SCRIPT="/tmp/.cmd_${SESSION_ID}.sh"
     cat > "$TEMP_SCRIPT" <<'SCRIPT_EOF'
 #!/bin/bash
@@ -66,7 +60,7 @@ SCRIPT_EOF
     exec asciinema rec -q "$RECORDING_FILE" -c "$TEMP_SCRIPT"
     
 else
-    # Interactive Session: Shell starten mit asciinema
+    # Interactive - NUR EINE Discord-Nachricht
     /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "Interactive Session" &
     exec asciinema rec -q "$RECORDING_FILE" -c "$USER_SHELL"
 fi
