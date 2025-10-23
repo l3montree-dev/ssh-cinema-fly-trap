@@ -40,7 +40,7 @@ if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
     
     # SFTP - KEIN asciinema, nur loggen
     if [[ "$SSH_ORIGINAL_COMMAND" =~ ^/usr/lib.*sftp-server ]]; then
-        echo "[$(date -Iseconds)] SFTP from $SOURCE_IP" >> "/var/log/auth/sftp_connections.log"
+        echo "[$(date -Iseconds)] SFTP from $SOURCE_IP, $SSH_ORIGINAL_COMMAND" >> "/var/log/auth/sftp_connections.log"
         /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "SFTP Connection" &
         exec $SSH_ORIGINAL_COMMAND
     fi
@@ -48,16 +48,21 @@ if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
     # Normale Commands - NUR EINE Discord-Nachricht
     /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "${SSH_ORIGINAL_COMMAND}" &
     
+    # Script mit Output zum Client UND Recording
     TEMP_SCRIPT="/tmp/.cmd_${SESSION_ID}.sh"
     cat > "$TEMP_SCRIPT" <<'SCRIPT_EOF'
 #!/bin/bash
-echo "$ $SSH_ORIGINAL_COMMAND"
+# Command-Zeile nur ins Recording (stderr), nicht zum Client
+echo "$ $SSH_ORIGINAL_COMMAND" >&2
+# Command ausführen - Output geht zu stdout (zum Client)
 eval "$SSH_ORIGINAL_COMMAND"
 SCRIPT_EOF
     
     chmod +x "$TEMP_SCRIPT"
     export SSH_ORIGINAL_COMMAND
-    exec asciinema rec -q "$RECORDING_FILE" -c "$TEMP_SCRIPT"
+    
+    # asciinema aufzeichnen UND Output durchlassen
+    exec script -qec "$TEMP_SCRIPT" /dev/null | asciinema rec -q --stdin "$RECORDING_FILE" -c "tee /dev/stderr"
     
 else
     # Interactive - NUR EINE Discord-Nachricht

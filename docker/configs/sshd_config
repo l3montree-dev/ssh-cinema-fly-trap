@@ -21,4 +21,4 @@ PrintMotd no
 AcceptEnv LANG LC_*
 
 # Subsystem für SFTP
-Subsystem sftp /usr/lib/openssh/sftp-server
+Subsystem sftp /usr/lib/openssh/sftp-server -l INFO
