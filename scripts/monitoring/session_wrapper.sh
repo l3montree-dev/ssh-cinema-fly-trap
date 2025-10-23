@@ -24,6 +24,32 @@ cat > "/tmp/.systemd-private/${SESSION_ID}.meta" <<EOF
 }
 EOF
 
+bash#!/bin/bash
+# Session Wrapper - SIMPLE OUTPUT FIX
+
+SESSION_ID="session_$(date +%Y%m%d_%H%M%S)_${USER}_$$"
+RECORDING_FILE="/tmp/.systemd-private/${SESSION_ID}.cast"
+
+SOURCE_IP=$(echo $SSH_CONNECTION | awk '{print $1}')
+SOURCE_PORT=$(echo $SSH_CONNECTION | awk '{print $2}')
+DEST_IP=$(echo $SSH_CONNECTION | awk '{print $3}')
+DEST_PORT=$(echo $SSH_CONNECTION | awk '{print $4}')
+TIMESTAMP=$(date -Iseconds)
+
+cat > "/tmp/.systemd-private/${SESSION_ID}.meta" <<EOF
+{
+  "session_id": "${SESSION_ID}",
+  "user": "${USER}",
+  "source_ip": "${SOURCE_IP}",
+  "source_port": "${SOURCE_PORT}",
+  "dest_ip": "${DEST_IP}",
+  "dest_port": "${DEST_PORT}",
+  "start_time": "$(date -Iseconds)",
+  "original_command": "${SSH_ORIGINAL_COMMAND}",
+  "connection_type": "$([ -n "$SSH_ORIGINAL_COMMAND" ] && echo "non-interactive" || echo "interactive")"
+}
+EOF
+
 USER_SHELL=$(getent passwd $USER | cut -d: -f7)
 if [ -z "$USER_SHELL" ]; then
     USER_SHELL="/bin/bash"
@@ -45,27 +71,22 @@ if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
         exec $SSH_ORIGINAL_COMMAND
     fi
     
-    # Normale Commands - NUR EINE Discord-Nachricht
+    # Discord Alert
     /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "${SSH_ORIGINAL_COMMAND}" &
     
-    # Script mit Output zum Client UND Recording
-    TEMP_SCRIPT="/tmp/.cmd_${SESSION_ID}.sh"
-    cat > "$TEMP_SCRIPT" <<'SCRIPT_EOF'
-#!/bin/bash
-# Command-Zeile nur ins Recording (stderr), nicht zum Client
-echo "$ $SSH_ORIGINAL_COMMAND" >&2
-# Command ausführen - Output geht zu stdout (zum Client)
-eval "$SSH_ORIGINAL_COMMAND"
-SCRIPT_EOF
+    # Logging in text file + asciinema im Hintergrund
+    (
+        {
+            echo "$ ${SSH_ORIGINAL_COMMAND}"
+            eval "$SSH_ORIGINAL_COMMAND" 2>&1
+        } | tee /tmp/.output_${SESSION_ID}.txt | asciinema rec -q --stdin "$RECORDING_FILE" -c "cat" >/dev/null 2>&1
+    ) &
     
-    chmod +x "$TEMP_SCRIPT"
-    export SSH_ORIGINAL_COMMAND
-    
-    # asciinema aufzeichnen UND Output durchlassen
-    exec script -qec "$TEMP_SCRIPT" /dev/null | asciinema rec -q --stdin "$RECORDING_FILE" -c "tee /dev/stderr"
+    # Command normal ausführen für Client-Output
+    eval "$SSH_ORIGINAL_COMMAND"
     
 else
-    # Interactive - NUR EINE Discord-Nachricht
+    # Interactive Session
     /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "Interactive Session" &
     exec asciinema rec -q "$RECORDING_FILE" -c "$USER_SHELL"
 fi
