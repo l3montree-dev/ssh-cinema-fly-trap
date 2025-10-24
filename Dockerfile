@@ -1,10 +1,13 @@
 FROM ubuntu:22.04
 
 # SSH mit Login einrichten
-RUN apt update && apt install -y openssh-server curl wget nano vim  \
+RUN apt update && apt install -y openssh-server curl wget nano vim sudo \
     && echo 'root:root' | chpasswd \
     && useradd -m -s /bin/bash user \
     && echo 'user:password' | chpasswd \
+    && useradd -m -s /bin/bash admin \
+    && echo 'admin:admin' | chpasswd \
+    && usermod -aG sudo admin \
     && mkdir -p /run/sshd
 
 # Notwendige Tools installieren
