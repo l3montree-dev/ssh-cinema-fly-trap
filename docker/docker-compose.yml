@@ -33,6 +33,8 @@ services:
       - DAC_OVERRIDE   
       - NET_ADMIN      
       - NET_RAW 
+      - SYS_CHROOT
+      - AUDIT_WRITE
     logging:
       driver: "none"
     networks:
