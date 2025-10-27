@@ -32,3 +32,5 @@ networks:
   honeypot_net:
     driver: bridge
     name: br-honeypot
+    driver_opts:
+      com.docker.network.bridge.name: br-honeypot
