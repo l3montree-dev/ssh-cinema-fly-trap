@@ -2,6 +2,7 @@ services:
   container:
     security_opt:
       - no-new-privileges:true
+      - apparmor=docker-default
     build:
       context: ..
       dockerfile: Dockerfile
@@ -17,12 +18,21 @@ services:
         limits:
           cpus: '0.50'
           memory: 512M
+          pids: 100
         reservations:
           cpus: '0.25'
           memory: 256M
     restart: unless-stopped
+    cap_drop:
+      - ALL
     cap_add:
-      - NET_ADMIN
+      - NET_BIND_SERVICE 
+      - CHOWN         
+      - SETUID     
+      - SETGID          
+      - DAC_OVERRIDE   
+      - NET_ADMIN      
+      - NET_RAW 
     logging:
       driver: "none"
     networks:
