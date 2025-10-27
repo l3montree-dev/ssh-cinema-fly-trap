@@ -25,3 +25,10 @@ services:
       - NET_ADMIN
     logging:
       driver: "none"
+    network:
+      - honeypot_net
+
+networks:
+  honeypot_net:
+    driver: bridge
+    name: br-honeypot
