@@ -55,7 +55,7 @@ COPY scripts/fun/exit.sh /opt/exit.sh
 RUN chmod +x /opt/exit.sh
 
 # Trollquestion instead of exit
-RUN alias exit="cd /opt && ./exit.sh"
+RUN echo 'alias exit="cd /opt && ./exit.sh"' >> /root/.bashrc
 
 EXPOSE 22
 
