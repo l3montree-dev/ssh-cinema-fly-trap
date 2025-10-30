@@ -6,10 +6,10 @@ read answer
 if [ "$answer" != "im not allowed to be here" ]
 then
     echo So indecisive...
-    exit 1
+    command exit 1
 fi
 
 echo I know...
 /bin/echo -n "Where are you from? "
 read answer
-exit 1
+command exit 1
