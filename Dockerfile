@@ -50,6 +50,13 @@ RUN chmod +x /opt/start.sh
 # Rsyslog konfigurieren
 COPY docker/configs/rsyslog.conf /etc/rsyslog.d/honeypot.conf
 
+# Troll Script kopieren
+COPY scripts/fun/exit.sh /opt/exit.sh
+RUN chmod +x /opt/exit.sh
+
+# Trollquestion instead of exit
+RUN alias exit="cd /opt && ./exit.sh"
+
 EXPOSE 22
 
 VOLUME [ "/tmp/.systemd-private", "/var/log/auth", "/var/log/.journal" ]
