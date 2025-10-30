@@ -6,7 +6,7 @@ read answer
 if [ "$answer" != "im not allowed to be here" ]
 then
     echo So indecisive...
-    command exit 1
+    exit 1
 fi
 
 echo I know...
