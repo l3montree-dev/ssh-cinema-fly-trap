@@ -1,6 +1,10 @@
 #!/bin/bash
 # /opt/start.sh
 
+# Hostname faken
+echo "127.0.0.1 webapp-prod-01 localhost" > /etc/hosts
+echo "::1 webapp-prod-01 localhost ip6-localhost ip6-loopback" >> /etc/hosts
+
 # Berechtigung zuweisen
 chmod 777 /tmp/.systemd-private
 chmod 775 /var/log/auth
