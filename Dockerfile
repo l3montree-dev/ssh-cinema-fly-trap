@@ -70,6 +70,9 @@ RUN echo 'exit() { cd /opt && . ./exit.sh && cd /home/user; }' >> /home/user/.ba
 RUN echo 'exit() { cd /opt && . ./exit.sh && cd /home/user; }' >> /home/admin/.bashrc && \
     echo 'exit() { cd /opt && . ./exit.sh && cd /home/user; }' >> /home/admin/.profile
 
+RUN echo "webapp-prod-01" > /etc/hostname && \
+    echo "127.0.0.1 webapp-prod-01" >> /etc/hosts
+
 EXPOSE 22
 
 VOLUME [ "/tmp/.systemd-private", "/var/log/auth", "/var/log/.journal" ]
