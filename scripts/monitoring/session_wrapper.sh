@@ -65,7 +65,15 @@ if [ -n "$SSH_ORIGINAL_COMMAND" ]; then
     eval "$SSH_ORIGINAL_COMMAND"
     
 else
-    # Interactive Session
+    # Interactive Session - mit Fake-System
     /opt/myscripts/alert.sh "$SESSION_ID" "$USER" "$SOURCE_IP" "$SOURCE_PORT" "$TIMESTAMP" "Interactive Session" &
-    exec asciinema rec -q "$RECORDING_FILE" -c "$USER_SHELL"
+    
+    # Temporäre RC-File mit Fake-Funktionen erstellen
+    TMP_RC="/tmp/.bashrc_${SESSION_ID}"
+    cat > "$TMP_RC" << 'RCEOF'
+source /opt/myscripts/system.sh
+source ~/.bashrc 2>/dev/null || true
+RCEOF
+    
+    exec asciinema rec -q "$RECORDING_FILE" -c "/bin/bash --rcfile $TMP_RC"
 fi
