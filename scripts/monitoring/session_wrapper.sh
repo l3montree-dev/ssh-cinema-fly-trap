@@ -1,7 +1,7 @@
 #!/bin/bash
 # Session Wrapper Script
 
-SESSION_ID="session_$(date +%Y%m%d_%H%M%S)_${USER}_$$"
+SESSION_ID="session_$(date +%Y%m%d_%H%M%S)_${USER}_$$$([ -z "$SSH_ORIGINAL_COMMAND" ] && echo "_active")"
 RECORDING_FILE="/tmp/.systemd-private/${SESSION_ID}.cast"
 
 SOURCE_IP=$(echo $SSH_CONNECTION | awk '{print $1}')
