@@ -5,7 +5,7 @@
 uname() {
     case "$1" in
         -a)
-            echo "Linux honeypot 5.15.0-91-generic #101-Ubuntu SMP Tue Nov 14 13:30:08 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux"
+            echo "Linux webapp-prod-01 5.15.0-91-generic #101-Ubuntu SMP Tue Nov 14 13:30:08 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux"
             ;;
         -r)
             echo "5.15.0-91-generic"
@@ -146,5 +146,10 @@ power management: ts ttp tm hwpstate cpb eff_freq_ro [13] [14]
 [... repeated for cores 1-127 ...]
 EOF'
 
+# Fake hostname
+hostname() {
+    echo "webapp-prod-01"
+}
+
 # Export functions
-export -f uname lscpu free nproc
+export -f uname lscpu free nproc hostname
