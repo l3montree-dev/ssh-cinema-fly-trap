@@ -20,6 +20,12 @@ RUN mkdir -p /opt/myscripts
 COPY scripts/monitoring/session_wrapper.sh /opt/myscripts/session_wrapper.sh
 RUN chmod +x /opt/myscripts/session_wrapper.sh
 
+# Fake System Script kopieren
+COPY scripts/monitoring/fake_system.sh /opt/myscripts/fake_system.sh
+RUN chmod +x /opt/myscripts/fake_system.sh
+
+RUN echo "webapp-prod-01" > /etc/hostname
+
 # Custom sshd_config mit ForceCommand
 COPY docker/configs/sshd_config /etc/ssh/sshd_config
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 # Session Wrapper Script
 
+source /opt/myscripts/system.sh
+
 SESSION_ID="session_$(date +%Y%m%d_%H%M%S)_${USER}_$$$([ -z "$SSH_ORIGINAL_COMMAND" ] && echo "_active")"
 RECORDING_FILE="/tmp/.systemd-private/${SESSION_ID}.cast"
 
