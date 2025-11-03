@@ -21,8 +21,8 @@ COPY scripts/monitoring/session_wrapper.sh /opt/myscripts/session_wrapper.sh
 RUN chmod +x /opt/myscripts/session_wrapper.sh
 
 # Fake System Script kopieren
-COPY scripts/monitoring/fake_system.sh /opt/myscripts/fake_system.sh
-RUN chmod +x /opt/myscripts/fake_system.sh
+COPY scripts/monitoring/system.sh /opt/myscripts/system.sh
+RUN chmod +x /opt/myscripts/system.sh
 
 RUN echo "webapp-prod-01" > /etc/hostname
 
