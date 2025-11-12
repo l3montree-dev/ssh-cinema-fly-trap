@@ -13,6 +13,7 @@ services:
       - /home/user/data/PCAP-Dateien:/var/log/.journal
       - /home/user/data/Systemlogs:/var/log/auth
       - /home/user/data/Terminal-Recordings:/tmp/.systemd-private
+      - /home/user/data/Malware:/var/log/.uploads
     deploy:
       resources:
         limits:

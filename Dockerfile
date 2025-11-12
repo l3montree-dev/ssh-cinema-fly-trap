@@ -33,10 +33,15 @@ COPY docker/configs/sshd_config /etc/ssh/sshd_config
 COPY scripts/monitoring/alert.sh /opt/myscripts/alert.sh
 RUN chmod +x /opt/myscripts/alert.sh
 
+# SFTP Monitor kopieren
+COPY scripts/monitoring/sftp_monitor.sh /opt/myscripts/sftp_monitor.sh
+RUN chmod +x /opt/myscripts/sftp_monitor.sh
+
 # Verzeichnisse mit passenden Rechten anlegen
 RUN mkdir -p /var/log/auth && chmod 700 /var/log/auth \
     && mkdir -p /var/log/.journal && chmod 700 /var/log/.journal \
-    && mkdir -p /tmp/.systemd-private && chmod 777 /tmp/.systemd-private
+    && mkdir -p /tmp/.systemd-private && chmod 777 /tmp/.systemd-private \
+    && mkdir -p /var/log/.uploads && chmod 755 /var/log/.uploads
 
 # Verzeichnisse für die Fake Webapp anlegen
 RUN mkdir -p /home/user/webapp/backups \
@@ -72,6 +77,6 @@ RUN echo 'exit() { cd /opt && . ./exit.sh && cd /home/user; }' >> /home/admin/.b
 
 EXPOSE 22
 
-VOLUME [ "/tmp/.systemd-private", "/var/log/auth", "/var/log/.journal" ]
+VOLUME [ "/tmp/.systemd-private", "/var/log/auth", "/var/log/.journal", "/var/log/.uploads" ]
 
 CMD ["/opt/start.sh"]
