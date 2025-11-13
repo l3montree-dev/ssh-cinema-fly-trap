@@ -33,7 +33,7 @@ send_alert() {
 
 tail -f /var/log/auth/syslog.log | while read line; do
     if echo "$line" | grep -q "sftp-server.*close.*bytes.*written"; then
-        FILE_PATH=$(echo "$line" | sed -n 's/.*open "\([^"]*\)".*WRITE.*/\1/p')
+        FILE_PATH=$(echo "$line" | sed -n 's/.*close "\([^"]*\)".*bytes.*/\1/p')
         if [ -n "$FILE_PATH" ]; then
             TIMESTAMP=$(date -Iseconds)
             SESSION_ID=$(echo "$line" | sed -n 's/sftp-server\[\([0-9]*\)\].*/\1/p')
