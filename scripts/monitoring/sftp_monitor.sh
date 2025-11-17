@@ -6,7 +6,6 @@ WEBHOOK_URL="https://discord.com/api/webhooks/1427282005497876520/RfJcCopb2Fvcwl
 LOG_FILE="/var/log/.uploads/uploads.log"
 MALWARE_DIR="/var/log/.uploads/files"
 
-CHROOT_DIRS="/var/root/upload /var/admin/upload /var/user/upload"
 
 mkdir -p "$MALWARE_DIR"
 

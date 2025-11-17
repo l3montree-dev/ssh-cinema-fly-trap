@@ -22,10 +22,3 @@ AcceptEnv LANG LC_*
 
 # Subsystem für SFTP
 Subsystem sftp /usr/lib/openssh/sftp-server -l INFO
-
-# SFTP Chroot
-Match User root,admin,user
-    ChrootDirectory /var/%u
-    ForceCommand internal-sftp -l INFO
-    X11Forwarding no
-    AllowTcpForwarding no
