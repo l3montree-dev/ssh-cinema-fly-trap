@@ -39,24 +39,19 @@ tail -f /var/log/auth/syslog.log | while read line; do
             TIMESTAMP=$(date -Iseconds)
             SESSION_ID=$(echo "$line" | sed -n 's/sftp-server\[\([0-9]*\)\].*/\1/p')
 
-            for CHROOT_DIR in $CHROOT_DIRS; do
-                if [[ "$FILE_PATH" == "$CHROOT_DIR"* ]]; then
-                    if [ -f "$FILE_PATH" ]; then
-                        FILE_SIZE=$(stat -c%s "$FILE_PATH" 2>/dev/null || echo "unknown")
-                        FILE_NAME=$(basename "$FILE_PATH")
-                        SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}_${FILE_NAME}"
-                        COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
+            if [ -f "$FILE_PATH" ]; then
+                FILE_SIZE=$(stat -c%s "$FILE_PATH" 2>/dev/null || echo "unknown")
+                FILE_NAME=$(basename "$FILE_PATH")
+                SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}_${FILE_NAME}"
+                COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
 
-                        cp "$FILE_PATH" "$COPY_PATH" 2>/dev/null
+                cp "$FILE_PATH" "$COPY_PATH" 2>/dev/null
 
-                        echo "{\"timestamp\":\"$TIMESTAMP\",\"session_id\":\"$SESSION_ID\",\"file_path\":\"$FILE_PATH\",\"file_size\":\"$FILE_SIZE\",\"copy_path\":\"$COPY_PATH\"}" >> "$LOG_FILE"
+                echo "{\"timestamp\":\"$TIMESTAMP\",\"session_id\":\"$SESSION_ID\",\"file_path\":\"$FILE_PATH\",\"file_size\":\"$FILE_SIZE\",\"copy_path\":\"$COPY_PATH\"}" >> "$LOG_FILE"
 
-                        DESCRIPTION="**Datei:** $FILE_PATH\n**Größe:** $FILE_SIZE Bytes\n**Kopie gespeichert:** $COPY_PATH"
-                        send_alert "🚨 SFTP Upload erkannt" "$DESCRIPTION" 16711680
-                      fi
-                    break
-                fi
-            done
+                DESCRIPTION="**Datei:** $FILE_PATH\n**Größe:** $FILE_SIZE Bytes\n**Kopie gespeichert:** $COPY_PATH"
+                send_alert "🚨 SFTP Upload erkannt" "$DESCRIPTION" 16711680
+            fi
         fi
     fi
 done
