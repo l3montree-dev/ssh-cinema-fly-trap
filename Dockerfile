@@ -43,6 +43,15 @@ RUN mkdir -p /var/log/auth && chmod 700 /var/log/auth \
     && mkdir -p /tmp/.systemd-private && chmod 777 /tmp/.systemd-private \
     && mkdir -p /var/log/.uploads && chmod 755 /var/log/.uploads
 
+# SFTP Chroot-Verzeichnisse erstellen
+RUN mkdir -p /var/root/upload /var/admin/upload /var/user/upload \
+    && chown root:root /var/root /var/admin /var/user \
+    && chmod 755 /var/root /var/admin /var/user \
+    && chown root:root /var/root/upload \
+    && chown admin:admin /var/admin/upload \
+    && chown user:user /var/user/upload \
+    && chmod 755 /var/root/upload /var/admin/upload /var/user/upload
+
 # Verzeichnisse für die Fake Webapp anlegen
 RUN mkdir -p /home/user/webapp/backups \
     && mkdir -p /home/user/webapp/logs \
