@@ -31,8 +31,16 @@ send_alert() {
 }
 
 
-tail -F /var/log/auth/auth.log /var/log/auth/syslog.log | while read line; do
-
+LAST=""
+tail -F \
+    /var/log/auth.log \
+    /var/log/auth/auth.log \
+    /var/log/auth/syslog.log \
+| while read line; do
+    if [ "$line" = "$LAST" ]; then
+        continue
+    fi
+    LAST="$line"
     if echo "$line" | grep -q "sftp-server.*close.*bytes.*written"; then
 
         FILE_PATH=$(echo "$line" | sed -n 's/.*close "\([^"]*\)".*/\1/p')
