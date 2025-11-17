@@ -31,7 +31,7 @@ send_alert() {
 }
 
 
-tail -F /var/log/auth.log | while read line; do
+tail -F /var/log/auth/auth.log /var/log/auth/syslog.log | while read line; do
 
     if echo "$line" | grep -q "sftp-server.*close.*bytes.*written"; then
 
