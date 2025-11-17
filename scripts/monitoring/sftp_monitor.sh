@@ -31,44 +31,26 @@ send_alert() {
 }
 
 
-LAST=""
-tail -F \
-    /var/log/auth.log \
-    /var/log/auth/auth.log \
-    /var/log/auth/syslog.log \
-| while read line; do
-    if [ "$line" = "$LAST" ]; then
-        continue
-    fi
-    LAST="$line"
+tail -f /var/log/auth/syslog.log | while read line; do
     if echo "$line" | grep -q "sftp-server.*close.*bytes.*written"; then
+        FILE_PATH=$(echo "$line" | sed -n 's/.*close "\([^"]*\)".*bytes.*/\1/p')
+        if [ -n "$FILE_PATH" ]; then
+            TIMESTAMP=$(date -Iseconds)
+            SESSION_ID=$(echo "$line" | sed -n 's/sftp-server\[\([0-9]*\)\].*/\1/p')
 
-        FILE_PATH=$(echo "$line" | sed -n 's/.*close "\([^"]*\)".*/\1/p')
-        PID=$(echo "$line" | sed -n 's/.*sftp-server\[\([0-9]*\)\].*/\1/p')
-        CHROOT=$(readlink "/proc/$PID/cwd" 2>/dev/null)
+            if [ -f "$FILE_PATH" ]; then
+                FILE_SIZE=$(stat -c%s "$FILE_PATH" 2>/dev/null || echo "unknown")
+                FILE_NAME=$(basename "$FILE_PATH")
+                SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}_${FILE_NAME}"
+                COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
 
-        if [ -z "$CHROOT" ]; then
-            echo "[WARN] Konnte CHROOT nicht bestimmen für PID $PID"
-            continue
+                cp "$FILE_PATH" "$COPY_PATH" 2>/dev/null
+
+                echo "{\"timestamp\":\"$TIMESTAMP\",\"session_id\":\"$SESSION_ID\",\"file_path\":\"$FILE_PATH\",\"file_size\":\"$FILE_SIZE\",\"copy_path\":\"$COPY_PATH\"}" >> "$LOG_FILE"
+
+                DESCRIPTION="**Datei:** $FILE_PATH\n**Größe:** $FILE_SIZE Bytes\n**Kopie gespeichert:** $COPY_PATH"
+                send_alert "🚨 SFTP Upload erkannt" "$DESCRIPTION" 16711680
+            fi
         fi
-
-        REAL_PATH="$CHROOT/${FILE_PATH#./}"
-        TIMESTAMP=$(date -Iseconds)
-        FILE_NAME=$(basename "$REAL_PATH")
-        SAFE_NAME="${PID}_${TIMESTAMP//:/-}_${FILE_NAME}"
-        COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
-        FILE_SIZE=$(stat -c%s "$REAL_PATH" 2>/dev/null || echo "unknown")
-
-        if [ -f "$REAL_PATH" ]; then
-            cp "$REAL_PATH" "$COPY_PATH"
-        fi
-
-        echo "{\"timestamp\":\"$TIMESTAMP\",\"pid\":\"$PID\",\"real_path\":\"$REAL_PATH\",\"file_size\":\"$FILE_SIZE\",\"copy\":\"$COPY_PATH\"}" >> "$LOG_FILE"
-
-        DESCRIPTION="**Datei:** \`$REAL_PATH\`\n**Größe:** $FILE_SIZE Bytes\n**Kopie:** \`$COPY_PATH\`"
-        send_alert "🚨 SFTP Upload erkannt" "$DESCRIPTION" 16711680
-
-        echo "[INFO] Upload erkannt: $REAL_PATH"
     fi
-
 done
