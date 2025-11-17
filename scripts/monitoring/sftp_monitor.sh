@@ -31,26 +31,53 @@ send_alert() {
 }
 
 
-tail -f /var/log/auth/syslog.log | while read line; do
-    if echo "$line" | grep -q "sftp-server.*close.*bytes.*written"; then
-        FILE_PATH=$(echo "$line" | sed -n 's/.*close "\([^"]*\)".*bytes.*/\1/p')
-        if [ -n "$FILE_PATH" ]; then
-            TIMESTAMP=$(date -Iseconds)
-            SESSION_ID=$(echo "$line" | sed -n 's/sftp-server\[\([0-9]*\)\].*/\1/p')
+declare -A SESSION_USER
 
-            if [ -f "$FILE_PATH" ]; then
-                FILE_SIZE=$(stat -c%s "$FILE_PATH" 2>/dev/null || echo "unknown")
-                FILE_NAME=$(basename "$FILE_PATH")
-                SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}_${FILE_NAME}"
-                COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
+tail -F /var/log/auth/syslog.log | while read -r line; do
 
-                cp "$FILE_PATH" "$COPY_PATH" 2>/dev/null
+    if [[ "$line" =~ sftp-server\[([0-9]+)\]:\ session\ opened\ for\ local\ user\ ([^[:space:]]+) ]]; then
+        SESSION_ID="${BASH_REMATCH[1]}"
+        USERNAME="${BASH_REMATCH[2]}"
+        SESSION_USER["$SESSION_ID"]="$USERNAME"
+        continue
+    fi
 
-                echo "{\"timestamp\":\"$TIMESTAMP\",\"session_id\":\"$SESSION_ID\",\"file_path\":\"$FILE_PATH\",\"file_size\":\"$FILE_SIZE\",\"copy_path\":\"$COPY_PATH\"}" >> "$LOG_FILE"
+    if echo "$line" | grep -Eq 'sftp-server.*close.*bytes read [0-9]+ written [0-9]+'; then
+        FILE_PATH=$(echo "$line" | sed -n 's/.*close "\(.*\)".*bytes.*/\1/p')
+        SESSION_ID=$(echo "$line" | sed -n 's/sftp-server\[\([0-9]*\)\].*/\1/p')
+        USERNAME="${SESSION_USER[$SESSION_ID]}"
 
-                DESCRIPTION="**Datei:** $FILE_PATH\n**Größe:** $FILE_SIZE Bytes\n**Kopie gespeichert:** $COPY_PATH"
-                send_alert "🚨 SFTP Upload erkannt" "$DESCRIPTION" 16711680
-            fi
+        if [[ -z "$USERNAME" ]]; then
+            USERNAME="unknown"
+        fi
+
+        TIMESTAMP=$(date -Iseconds)
+
+        USER_HOME=$(getent passwd "$USERNAME" | cut -d: -f6)
+        if [[ -z "$USER_HOME" ]]; then
+            USER_HOME="$HOME"  # Fallback
+        fi
+
+        if [[ "$FILE_PATH" == ./* ]]; then
+            FILE_PATH="$USER_HOME/${FILE_PATH:2}"
+        elif [[ "$FILE_PATH" != /* ]]; then
+            FILE_PATH="$USER_HOME/$FILE_PATH"
+        fi
+
+        if [ -f "$FILE_PATH" ]; then
+            FILE_SIZE=$(stat -c%s "$FILE_PATH" 2>/dev/null || echo "unknown")
+            FILE_NAME=$(basename "$FILE_PATH")
+            SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}_${FILE_NAME}"
+            COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
+
+            mkdir -p "$MALWARE_DIR"
+            cp "$FILE_PATH" "$COPY_PATH" 2>/dev/null
+
+            echo "{\"timestamp\":\"$TIMESTAMP\",\"session_id\":\"$SESSION_ID\",\"username\":\"$USERNAME\",\"file_path\":\"$FILE_PATH\",\"file_size\":\"$FILE_SIZE\",\"copy_path\":\"$COPY_PATH\"}" >> "$LOG_FILE"
+
+            DESCRIPTION="**Datei:** $FILE_PATH\n**Größe:** $FILE_SIZE Bytes\n**Kopie gespeichert:** $COPY_PATH"
+            send_alert "🚨 SFTP Upload erkannt" "$DESCRIPTION" 16711680
         fi
     fi
+
 done
