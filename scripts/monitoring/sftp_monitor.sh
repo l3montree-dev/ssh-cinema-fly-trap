@@ -35,7 +35,7 @@ tail -f /var/log/auth/syslog.log | while read line; do
 
     if echo "$line" | grep -q "sftp-server.*opened.*"; then
         USERNAME=$(echo "$line" | sed -n 's/.*opened for local user \([^ ]*\) from.*/\1/p')
-        SESSION_ID=$(echo "$line" | sed -n 's/sftp-server\[\([0-9]*\)\].*/\1/p')
+        SESSION_ID=$(echo "$line" | grep -oP 'sftp-server\[\K[0-9]+(?=\])')
         SESSION_USERS[$SESSION_ID]="$USERNAME"
     fi
 
@@ -44,7 +44,7 @@ tail -f /var/log/auth/syslog.log | while read line; do
 
         if [ -n "$RELATIVE_PATH" ]; then
             TIMESTAMP=$(date -Iseconds)
-            SESSION_ID=$(echo "$line" | sed -n 's/sftp-server\[\([0-9]*\)\].*/\1/p')
+            SESSION_ID=$(echo "$line" | grep -oP 'sftp-server\[\K[0-9]+(?=\])')
             USERNAME="${SESSION_USERS[$SESSION_ID]:-unknown}"
             
             if [[ "$RELATIVE_PATH" == /* ]]; then
@@ -73,7 +73,7 @@ tail -f /var/log/auth/syslog.log | while read line; do
         fi
     fi
     if echo "$line" | grep -q "sftp-server.*session closed"; then
-        SESSION_ID=$(echo "$line" | sed -n 's/.*sftp-server\[\([0-9]*\)\].*/\1/p')
+        SESSION_ID=$(echo "$line" | grep -oP 'sftp-server\[\K[0-9]+(?=\])')
         unset SESSION_USERS[$SESSION_ID]
     fi
 done
