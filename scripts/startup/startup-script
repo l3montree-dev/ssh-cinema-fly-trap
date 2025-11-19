@@ -23,5 +23,8 @@ tcpdump -i any -w /var/log/.journal/traffic_${TIMESTAMP}.pcap &
 # SFTP Monitor starten
 /opt/myscripts/sftp_monitor.sh &
 
+# Inotify starten
+/opt/myscripts/inotify.sh &
+
 # sshd im Vordergrund starten
 /usr/sbin/sshd -D
