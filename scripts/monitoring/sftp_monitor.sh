@@ -21,7 +21,7 @@ send_alert() {
           \"title\": \"$title\",
           \"description\": \"$description\",
           \"color\": $color,
-          \"timestamp\": \"$(date -Iseconds)\",
+          \"timestamp\": \"$(date +%Y-%m-%d_%H-%M-%S)\",
           \"footer\": {
             \"text\": \"SFTP Upload Monitor\"
           }
@@ -43,7 +43,7 @@ tail -f /var/log/auth/syslog.log | while read line; do
         RELATIVE_PATH=$(echo "$line" | sed -n 's/.*close "\([^"]*\)".*bytes.*/\1/p')
 
         if [ -n "$RELATIVE_PATH" ]; then
-            TIMESTAMP=$(date -Iseconds)
+            TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
             SESSION_ID=$(echo "$line" | grep -oP 'sftp-server\[\K[0-9]+(?=\])')
             USERNAME="${SESSION_USERS[$SESSION_ID]:-unknown}"
             
@@ -60,7 +60,7 @@ tail -f /var/log/auth/syslog.log | while read line; do
             if [ -f "$FULL_PATH" ]; then
                 FILE_SIZE=$(stat -c%s "$FULL_PATH" 2>/dev/null || echo "unknown")
                 SAFE_RELATIVE=$(echo "$RELATIVE_PATH" | tr '/' '_')
-                SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}_${SAFE_RELATIVE}"
+                SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}${SAFE_RELATIVE}"
                 COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
 
                 cp "$FULL_PATH" "$COPY_PATH" 2>/dev/null
