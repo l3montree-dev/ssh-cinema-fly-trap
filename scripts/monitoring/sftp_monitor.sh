@@ -60,7 +60,7 @@ tail -f /var/log/auth/syslog.log | while read line; do
             if [ -f "$FULL_PATH" ]; then
                 FILE_SIZE=$(stat -c%s "$FULL_PATH" 2>/dev/null || echo "unknown")
                 SAFE_RELATIVE=$(echo "$RELATIVE_PATH" | tr '/' '_')
-                SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}${SAFE_RELATIVE}"
+                SAFE_NAME="${SESSION_ID}_${TIMESTAMP//:/-}_${SAFE_RELATIVE}"
                 COPY_PATH="$MALWARE_DIR/$SAFE_NAME"
 
                 cp "$FULL_PATH" "$COPY_PATH" 2>/dev/null
