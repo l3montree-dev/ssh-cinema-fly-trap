@@ -11,7 +11,7 @@ RUN apt update && apt install -y openssh-server curl wget nano vim sudo \
     && mkdir -p /run/sshd
 
 # Notwendige Tools installieren
-RUN apt-get install -y python3-pip tcpdump rsyslog inotify-tools && \
+RUN apt-get install -y python3-pip tcpdump rsyslog && \
     pip3 install asciinema && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
