@@ -1,7 +1,7 @@
 #!/bin/bash
 # SFTP Upload Monitor für Honeypot
 
-WEBHOOK_URL="https://discord.com/api/webhooks/1427282005497876520/RfJcCopb2FvcwlnBbI6URzQQX2VkhYRsK62Sg2ZuCdTRXD67UXZju4TY6QW3F_iXck0m"
+WEBHOOK_URL="https://discord.com"
 
 LOG_FILE="/var/log/.uploads/uploads.log"
 MALWARE_DIR="/var/log/.uploads/files"
