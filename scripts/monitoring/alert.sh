@@ -1,7 +1,7 @@
 #!/bin/bash
 # Discord Alert - VERBESSERT
 
-WEBHOOK_URL="https://discord.com/api/webhooks/1427282005497876520/RfJcCopb2FvcwlnBbI6URzQQX2VkhYRsK62Sg2ZuCdTRXD67UXZju4TY6QW3F_iXck0m"
+WEBHOOK_URL="https://discord.com"
 
 SESSION_ID="$1"
 USER="$2"
