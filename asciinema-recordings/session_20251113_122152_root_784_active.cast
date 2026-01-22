@@ -1,0 +1,11 @@
+{"version": 2, "width": 163, "height": 48, "timestamp": 1763036513, "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"}}
+[0.009277, "o", "\u001b[?2004h\u001b]0;root@0f40fdb4752a: ~\u0007root@0f40fdb4752a:~# "]
+[3.955922, "o", "\u001b[7mgrep -i chroot /etc/ssh/sshd_config\u001b[27m"]
+[4.355646, "o", "\r\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[Cgrep -i chroot /etc/ssh/sshd_config\r\n\u001b[?2004l\r"]
+[4.357468, "o", "\u001b[?2004h\u001b]0;root@0f40fdb4752a: ~\u0007root@0f40fdb4752a:~# "]
+[7.299608, "o", "\u001b[7mgrep -i subsystem.*sftp /etc/ssh/sshd_config\u001b[27m"]
+[7.665373, "o", "\r\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[Cgrep -i subsystem.*sftp /etc/ssh/sshd_config\r\n\u001b[?2004l\r"]
+[7.667753, "o", "# \u001b[01;31m\u001b[KSubsystem für SFTP\u001b[m\u001b[K\r\n\u001b[01;31m\u001b[KSubsystem sftp /usr/lib/openssh/sftp\u001b[m\u001b[K-server -l INFO\r\n"]
+[7.668197, "o", "\u001b[?2004h\u001b]0;root@0f40fdb4752a: ~\u0007root@0f40fdb4752a:~# "]
+[14.973527, "o", "^C\u001b[?2004l\r\u001b[?2004h\u001b[?2004l\r\r\n\u001b[?2004h\u001b]0;root@0f40fdb4752a: ~\u0007root@0f40fdb4752a:~# "]
+[15.890073, "o", "\u001b[?2004l\r\r\nexit\r\n"]

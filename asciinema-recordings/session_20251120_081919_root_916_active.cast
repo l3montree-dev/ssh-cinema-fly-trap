@@ -1,0 +1,12 @@
+{"version": 2, "width": 80, "height": 24, "timestamp": 1763626759, "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"}}
+[0.069504, "o", "\u001b[?2004h\u001b]0;root@bf150e31fe2f: ~\u0007root@bf150e31fe2f:~# "]
+[1.555222, "o", "l"]
+[1.667489, "o", "s"]
+[1.71599, "o", " "]
+[1.875849, "o", "-"]
+[1.98968, "o", "l"]
+[2.154757, "o", "a"]
+[2.271506, "o", "\r\n\u001b[?2004l\r"]
+[2.274211, "o", "total 132\r\n"]
+[2.274287, "o", "drwx------ 1 root root  4096 Nov 20 08:19 \u001b[0m\u001b[01;34m.\u001b[0m\r\ndrwxr-xr-x 1 root root  4096 Nov 20 08:16 \u001b[01;34m..\u001b[0m\r\n-rw-r--r-- 1 root root  3158 Nov 20 08:16 .bashrc\r\ndrwxr-xr-x 1 root root  4096 Nov 20 08:16 \u001b[01;34m.cache\u001b[0m\r\ndrwxr-xr-x 3 root root  4096 Nov 20 08:17 \u001b[01;34m.config\u001b[0m\r\n-rw-r--r-- 1 root root   213 Nov 20 08:16 .profile\r\n-rw-r--r-- 1 root root 52090 Nov 20 08:16 123123123122\r\n-rw-r--r-- 1 root root 52090 Nov 20 08:19 \u001b[01;35mTest.png\u001b[0m\r\n"]
+[2.274653, "o", "\u001b[?2004h\u001b]0;root@bf150e31fe2f: ~\u0007root@bf150e31fe2f:~# "]

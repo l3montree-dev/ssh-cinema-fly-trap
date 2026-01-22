@@ -1,0 +1,13 @@
+{"version": 2, "width": 118, "height": 68, "timestamp": 1762263791, "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"}}
+[0.01172, "o", "\u001b[?2004h\u001b]0;root@20272bc31aee: ~\u0007root@20272bc31aee:~# "]
+[1.553666, "o", "l"]
+[1.637111, "o", "s"]
+[1.693406, "o", " "]
+[1.897558, "o", "-"]
+[1.931953, "o", "l"]
+[2.050074, "o", "l"]
+[2.119243, "o", "a"]
+[2.245962, "o", "\r\n\u001b[?2004l\r"]
+[2.248724, "o", "total 32\r\ndrwx------ 1 root root 4096 Nov  4 13:32 \u001b[0m\u001b[01;34m.\u001b[0m\r\ndrwxr-xr-x 1 root root 4096 Nov  4 13:32 \u001b[01;34m..\u001b[0m\r\n-rw------- 1 root root  130 Nov  4 13:35 .bash_history\r\n-rw-r--r-- 1 root root 3158 Nov  3 12:41 .bashrc\r\ndrwxr-xr-x 1 root root 4096 Nov  4 13:32 \u001b[01;34m.cache\u001b[0m\r\ndrwxr-xr-x 4 root root 4096 Nov  4 13:34 \u001b[01;34m.config\u001b[0m\r\n-rw-r--r-- 1 root root  213 Nov  3 12:41 .profile\r\n"]
+[2.249257, "o", "\u001b[?2004h\u001b]0;root@20272bc31aee: ~\u0007root@20272bc31aee:~# "]
+[5.424011, "o", "\u001b[?2004l\r\r\nexit\r\n"]

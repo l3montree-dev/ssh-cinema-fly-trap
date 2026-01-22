@@ -1,0 +1,11 @@
+{"version": 2, "width": 80, "height": 60, "timestamp": 1763560565, "env": {"SHELL": "/bin/bash", "TERM": "vt-100"}}
+[0.010476, "o", "user@6d12fdb2cee8:~$ "]
+[1.984431, "o", "?\r\n"]
+[1.985262, "o", "bash: ?: command not found\r\n"]
+[1.985728, "o", "user@6d12fdb2cee8:~$ \r\nuser@6d12fdb2cee8:~$ \r\n"]
+[1.986012, "o", "user@6d12fdb2cee8:~$ "]
+[3.307845, "o", "cd ~\r\n"]
+[3.308027, "o", "user@6d12fdb2cee8:~$ "]
+[4.332104, "o", "ls\r\n"]
+[4.33376, "o", "a6s87d6as8zdgtdyas.ini  documents  downloads  webapp\r\n"]
+[4.334038, "o", "user@6d12fdb2cee8:~$ "]
